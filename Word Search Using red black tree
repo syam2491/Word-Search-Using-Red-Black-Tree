@@ -1,0 +1,128 @@
+import java.util.*;
+public class RedBlackTreesc {
+    private Node root;
+    private static final boolean RED = true;
+    private static final boolean BLACK = false;
+
+    private class Node {
+        String data;
+        Node left, right;
+        boolean color;
+
+        Node(String data) {
+            this.data = data;
+            left = null;
+            right = null;
+            color = RED;
+        }
+    }
+
+    public RedBlackTreesc() {
+        root = null;
+    }
+
+    public void insert(String word) {
+        root = insert(root, word);
+        root.color = BLACK;
+    }
+
+    private Node insert(Node current, String word) {
+        if (current == null) {
+            return new Node(word);
+        }
+        if (word.compareTo(current.data) < 0) {
+            current.left = insert(current.left, word);
+        } else if (word.compareTo(current.data) > 0) {
+            current.right = insert(current.right, word);
+        }
+        if (isRed(current.right) && !isRed(current.left)) {
+            current = rotateLeft(current);
+        }
+        if (isRed(current.left) && isRed(current.left.left)) {
+            current = rotateRight(current);
+        }
+        if (isRed(current.left) && isRed(current.right)) {
+            flipColors(current);
+        }
+        return current;
+    }
+    
+    private Node rotateRight(Node current) {
+        Node left = current.left;
+        current.left = left.right;
+        left.right = current;
+        left.color = current.color;
+        current.color = RED;
+        return left;
+    }
+
+    private Node rotateLeft(Node current) {
+        Node right = current.right;
+        current.right = right.left;
+        right.left = current;
+        right.color = current.color;
+        current.color = RED;
+        return right;
+    }
+
+
+    private void flipColors(Node current) {
+        current.color = RED;
+        current.left.color = BLACK;
+        current.right.color = BLACK;
+    }
+
+    private boolean isRed(Node current) {
+        if (current == null) {
+            return false;
+        }
+        return current.color == RED;
+    }
+
+    public boolean search(String word) {
+        return search(root, word);
+    }
+
+    private boolean search(Node current, String word) {
+        if (current == null) {
+            return false;
+        }
+        if (word.compareTo(current.data) == 0) {
+            return true;
+        }
+        if (word.compareTo(current.data) < 0) {
+            return search(current.left, word);
+        }
+        return search(current.right, word);
+    }
+    
+
+    public static void main(String[] args) {
+        RedBlackTreesc spellChecker = new RedBlackTreesc();
+        String[] words = {"hello", "this", "is", "team11", "spell", "checker","Name"};
+        for (String word : words) {
+            spellChecker.insert(word);
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("Press 1 if you want to enter a word to check its spelling: ");
+            System.out.println("Press 2 to Quit ");
+            int k = scanner.nextInt();
+            if(k==1) {
+            	System.out.println("Enter a word to check its spelling: ");
+            	String word = scanner.next();
+            	if (spellChecker.search(word)) {
+            		System.out.println("Correct Spelling!");
+            	} else {
+            		System.out.println("Incorrect Spelling!");
+            }
+            	}
+            else
+            {
+            	System.out.println("Thank You...!");
+            	break;
+            }
+        }
+    }
+}
